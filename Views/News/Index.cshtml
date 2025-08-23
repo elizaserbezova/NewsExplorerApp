@@ -11,7 +11,7 @@
     <div class="col-md-3">
         <label for="country" class="form-label">Country</label>
         <select class="form-select" id="country" name="country">
-            @foreach (var country in countries)
+            @foreach (var country in ViewBag.Countries)
             {
                 if (Model.SelectedCountry == country)
                 {
@@ -28,7 +28,7 @@
     <div class="col-md-3">
         <label for="category" class="form-label">Category</label>
         <select class="form-select" id="category" name="category">
-            @foreach (var category in categories)
+            @foreach (var category in ViewBag.Categories)
             {
                 if (Model.SelectedCategory == category)
                 {
@@ -42,18 +42,43 @@
         </select>
     </div>
 
+    <div class="col-md-3">
+        <label for="sources" class="form-label">Sources</label>
+        <select class="form-select" id="sources" name="sources">
+            <option value="">All</option>
+            @foreach (var source in ViewBag.Sources)
+            {
+                if (Model.SelectedSources == source)
+                {
+                    <option value="@source" selected>@source</option>
+                }
+                else
+                {
+                    <option value="@source">@source</option>
+                }
+            }
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <label for="searchQuery" class="form-label">Search by keyword</label>
+        <input type="text" class="form-control" id="searchQuery" name="searchQuery" value="@Model.SearchQuery" placeholder="Enter a keyword or phrase">
+    </div>
+  
+    <div class="col-md-2 align-self-end">
+        <button type="submit" class="btn btn-secondary w-100" name="sortOrder" value="desc">Sort by Newest</button>
+    </div>
+   
+    <div class="col-md-2 align-self-end">
+        <button type="submit" class="btn btn-secondary w-100" name="sortOrder" value="asc">Sort by Oldest</button>
+    </div>
+
     <div class="col-md-2 align-self-end">
         <button type="submit" class="btn btn-primary w-100">Search</button>
     </div>
 </form>
 
-@if (ViewBag.Error != null)
-{
-    <div class="alert alert-danger" role="alert">
-        <strong>⚠</strong> @ViewBag.Error
-    </div>
-}
-else if (Model.Articles != null && Model.Articles.Any())
+@if (Model.Articles.Any())
 {
     <div class="row row-cols-1 row-cols-md-3 g-4">
         @foreach (var article in Model.Articles)
@@ -64,14 +89,13 @@ else if (Model.Articles != null && Model.Articles.Any())
                     {
                         <img src="@article.UrlToImage" class="card-img-top" alt="Article Image" style="height: 200px; object-fit: cover;">
                     }
-                    <div class="card-body d-flex flex-column">
+                    <div class="card-body">
                         <h5 class="card-title">@article.Title</h5>
                         <p class="card-text">@article.Description</p>
-                        <p class="text-muted small mt-auto">
-                            Published: @article.PublishedAt <br />
-                            Source: @article.SourceName
-                        </p>
-                        <a href="@article.Url" class="btn btn-outline-primary mt-2" target="_blank">Read More</a>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-muted">@article.PublishedAt?.ToString("dd MMM yyyy HH:mm")</small>
+                        <a href="@article.Url" class="btn btn-primary btn-sm float-end" target="_blank">Прочети</a>
                     </div>
                 </div>
             </div>
@@ -80,5 +104,31 @@ else if (Model.Articles != null && Model.Articles.Any())
 }
 else
 {
-    <p>No news articles found.</p>
+    <p>Няма намерени новини за зададените критерии.</p>
 }
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var sourcesSelect = document.getElementById('sources');
+        var countrySelect = document.getElementById('country');
+        var categorySelect = document.getElementById('category');
+
+    
+        function toggleFields() {
+            if (sourcesSelect.value !== "") { 
+                countrySelect.disabled = true;
+                categorySelect.disabled = true;
+            } else {
+                countrySelect.disabled = false;
+                categorySelect.disabled = false;
+            }
+        }
+
+        toggleFields();
+
+        sourcesSelect.addEventListener('change', function () {
+            toggleFields();
+        });
+    });
+</script>

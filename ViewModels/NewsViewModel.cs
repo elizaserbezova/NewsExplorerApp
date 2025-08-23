@@ -1,4 +1,5 @@
 ﻿using NewsExplorerApp.Models;
+using System.Collections.Generic;
 
 namespace NewsExplorerApp.ViewModels
 {
@@ -7,6 +8,14 @@ namespace NewsExplorerApp.ViewModels
         public List<NewsArticle> Articles { get; set; }
         public string SelectedCategory { get; set; }
         public string SelectedCountry { get; set; }
+
+        public string SearchQuery { get; set; }
+
+        public string SelectedSources { get; set; }
+
+        public string SortOrder { get; set; }
+
+        public DateTime? PublishedAt { get; set; }
 
         public List<string> Categories { get; set; } = new()
         {
