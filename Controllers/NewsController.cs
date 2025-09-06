@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Linq;
+using NewsExplorerApp.Models;
 
 namespace NewsExplorerApp.Controllers
 {
@@ -17,6 +19,9 @@ namespace NewsExplorerApp.Controllers
         {
             _configuration = configuration;
         }
+
+        protected virtual HttpClient CreateHttpClient() => new HttpClient();
+        protected virtual HttpClient CreateHttpClientForSources() => new HttpClient();
 
         public async Task<IActionResult> Index(string country = "us", string category = "general", string searchQuery = "", string sources = "", string sortOrder = "desc")
         {
@@ -48,7 +53,7 @@ namespace NewsExplorerApp.Controllers
             urlBuilder.Query = query.ToString();
             url = urlBuilder.ToString();
 
-            using HttpClient httpClient = new HttpClient();
+            using HttpClient httpClient = CreateHttpClient();
             httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0");
 
             var response = await httpClient.GetAsync(url);
@@ -120,7 +125,7 @@ namespace NewsExplorerApp.Controllers
             string apiKey = _configuration["NewsApi:ApiKey"];
             string url = $"https://newsapi.org/v2/sources?apiKey={apiKey}";
 
-            using HttpClient httpClient = new HttpClient();
+            using HttpClient httpClient = CreateHttpClientForSources();
             httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0");
             var response = await httpClient.GetAsync(url);
 
@@ -138,21 +143,5 @@ namespace NewsExplorerApp.Controllers
             return result?.Sources?.Select(s => s.Id).ToList() ?? new List<string>();
         }
 
-        public class NewsApiSourcesResponse
-        {
-            public List<NewsApiSource> Sources { get; set; }
-        }
-
-        public class NewsApiSource
-        {
-            public string Id { get; set; }
-            public string Name { get; set; }
-        }
-
-
-        public class NewsApiResponse
-        {
-            public List<NewsArticle> Articles { get; set; }
-        }
     }
 }

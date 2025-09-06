@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.35013.160
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewsExplorerApp", "NewsExplorerApp.csproj", "{D6C431D1-F342-4E67-A822-2318F1A0DF85}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewsExplorerApp", "NewsExplorerApp.csproj", "{D6C431D1-F342-4E67-A822-2318F1A0DF85}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewsExplorerApp.Tests", "..\NewsExplorerApp.Tests\NewsExplorerApp.Tests.csproj", "{1091AE4D-78B5-43E7-BFD5-0E9053721D2E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{D6C431D1-F342-4E67-A822-2318F1A0DF85}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D6C431D1-F342-4E67-A822-2318F1A0DF85}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D6C431D1-F342-4E67-A822-2318F1A0DF85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1091AE4D-78B5-43E7-BFD5-0E9053721D2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1091AE4D-78B5-43E7-BFD5-0E9053721D2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1091AE4D-78B5-43E7-BFD5-0E9053721D2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1091AE4D-78B5-43E7-BFD5-0E9053721D2E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
