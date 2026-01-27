@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NewsExplorerApp.Data;
+using NewsExplorerApp.Options;
+using NewsExplorerApp.Services;
+using System.Net.Http.Headers;
 
 namespace NewsExplorerApp
 {
@@ -19,6 +22,23 @@ namespace NewsExplorerApp
             builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllersWithViews();
+
+
+            builder.Services.Configure<NewsApiOptions>(
+                 builder.Configuration.GetSection(NewsApiOptions.SectionName));
+
+            builder.Services.AddHttpClient<INewsApiClient, NewsApiClient>((sp, client) =>
+            {
+                var options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<NewsApiOptions>>().Value;
+
+                client.BaseAddress = new Uri(options.BaseUrl);
+
+                client.DefaultRequestHeaders.UserAgent.ParseAdd("NewsExplorerApp/1.0");
+                client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            });
+
+            builder.Services.AddScoped<INewsService, NewsService>();
+
 
             var app = builder.Build();
 
