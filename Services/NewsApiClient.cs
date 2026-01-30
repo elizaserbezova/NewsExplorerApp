@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using NewsExplorerApp.Models;
 using NewsExplorerApp.Options;
+using System;
 using System.Text.Json;
 
 namespace NewsExplorerApp.Services
@@ -21,7 +22,7 @@ namespace NewsExplorerApp.Services
             _options = options.Value;
         }
 
-        public async Task<NewsApiResponse?> GetTopHeadlinesAsync(
+        public async Task<NewsApiResult<NewsApiResponse>> GetTopHeadlinesAsync(
             string country,
             string category,
             string searchQuery,
@@ -33,23 +34,32 @@ namespace NewsExplorerApp.Services
             using var response = await _http.GetAsync(url, cancellationToken);
 
             if (!response.IsSuccessStatusCode)
-                return null;
+                return NewsApiResult<NewsApiResponse>.Fail(response.StatusCode);
 
             var json = await response.Content.ReadAsStringAsync(cancellationToken);
-            return JsonSerializer.Deserialize<NewsApiResponse>(json, JsonOptions);
+
+            var data = JsonSerializer.Deserialize<NewsApiResponse>(json, JsonOptions)
+                       ?? new NewsApiResponse { Articles = new List<NewsArticle>() };
+
+            return NewsApiResult<NewsApiResponse>.Success(data);
         }
 
-        public async Task<NewsApiSourcesResponse?> GetSourcesAsync(
+        public async Task<NewsApiResult<NewsApiSourcesResponse>> GetSourcesAsync(
             CancellationToken cancellationToken = default)
         {
             var url = $"sources?apiKey={Uri.EscapeDataString(_options.ApiKey)}";
 
             using var response = await _http.GetAsync(url, cancellationToken);
+
             if (!response.IsSuccessStatusCode)
-                return null;
+                return NewsApiResult<NewsApiSourcesResponse>.Fail(response.StatusCode);
 
             var json = await response.Content.ReadAsStringAsync(cancellationToken);
-            return JsonSerializer.Deserialize<NewsApiSourcesResponse>(json, JsonOptions);
+
+            var data = JsonSerializer.Deserialize<NewsApiSourcesResponse>(json, JsonOptions)
+                       ?? new NewsApiSourcesResponse { Sources = new List<NewsApiSource>() };
+
+            return NewsApiResult<NewsApiSourcesResponse>.Success(data);
         }
 
         private string BuildTopHeadlinesUrl(string country, string category, string searchQuery, string sources)
@@ -78,3 +88,4 @@ namespace NewsExplorerApp.Services
         }
     }
 }
+

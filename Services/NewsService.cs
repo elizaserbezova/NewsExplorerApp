@@ -33,7 +33,7 @@ namespace NewsExplorerApp.Services
 
             var apiResult = await _client.GetTopHeadlinesAsync(country, category, searchQuery, sources, cancellationToken);
 
-            var articles = apiResult?.Articles ?? new List<NewsArticle>();
+            var articles = apiResult?.Data?.Articles ?? new List<NewsArticle>();
 
 
             articles = sortOrder == "asc"
