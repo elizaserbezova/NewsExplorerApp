@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NewsExplorerApp.Models;
-using NewsExplorerApp.Services;
+using NewsExplorerApp.Services.Interfaces;
 using NewsExplorerApp.ViewModels;
 
 namespace NewsExplorerApp.Controllers

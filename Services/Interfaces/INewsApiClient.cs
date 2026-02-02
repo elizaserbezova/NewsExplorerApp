@@ -1,6 +1,6 @@
 ﻿using NewsExplorerApp.Models;
 
-namespace NewsExplorerApp.Services
+namespace NewsExplorerApp.Services.Interfaces
 {
     public interface INewsApiClient
     {

@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using NewsExplorerApp.Data;
 using NewsExplorerApp.Options;
 using NewsExplorerApp.Services;
+using NewsExplorerApp.Services.Interfaces;
 using System.Net.Http.Headers;
 
 namespace NewsExplorerApp

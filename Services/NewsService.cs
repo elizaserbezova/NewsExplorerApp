@@ -1,4 +1,5 @@
 ﻿using NewsExplorerApp.Models;
+using NewsExplorerApp.Services.Interfaces;
 using NewsExplorerApp.ViewModels;
 
 namespace NewsExplorerApp.Services
