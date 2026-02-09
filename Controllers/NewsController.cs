@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NewsExplorerApp.Models;
+using NewsExplorerApp.Services;
 using NewsExplorerApp.Services.Interfaces;
 using NewsExplorerApp.ViewModels;
 
@@ -23,13 +24,20 @@ namespace NewsExplorerApp.Controllers
             string sources = "",
             string sortOrder = "desc")
         {
-            ValidateInputs(ref country, ref category, ref sortOrder, sources);
+            ViewBag.Countries = NewsService.GetAllowedCountries();
+            ViewBag.Categories = NewsService.GetAllowedCategories();
 
-            ViewBag.Countries = GetCountries();
-            ViewBag.Categories = GetCategories();
-            ViewBag.Sources = await GetSourcesAsync();
+            var sourcesResult = await _newsApiClient.GetSourcesAsync();
+            ViewBag.Sources = sourcesResult.IsSuccess
+                ? sourcesResult.Data?.Sources?.Select(s => s.Id).ToList() ?? new List<string>()
+                : new List<string>();
 
-            var vm = await _newsService.GetNewsViewModelAsync(country, category, searchQuery, sources, sortOrder);
+            var vm = await _newsService.GetNewsViewModelAsync(
+                country,
+                category,
+                searchQuery,
+                sources,
+                sortOrder);
 
             return View(vm);
         }

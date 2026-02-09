@@ -26,5 +26,8 @@ namespace NewsExplorerApp.ViewModels
         {
             "us", "gb", "de", "fr", "it", "bg"
         };
+
+        public string? ErrorMessage { get; set; }
+
     }
 }

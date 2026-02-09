@@ -1,6 +1,7 @@
 ﻿using NewsExplorerApp.Models;
 using NewsExplorerApp.Services.Interfaces;
 using NewsExplorerApp.ViewModels;
+using System.Net;
 
 namespace NewsExplorerApp.Services
 {
@@ -34,6 +35,20 @@ namespace NewsExplorerApp.Services
 
             var apiResult = await _client.GetTopHeadlinesAsync(country, category, searchQuery, sources, cancellationToken);
 
+            if (apiResult is null || !apiResult.IsSuccess)
+            {
+                return new NewsViewModel
+                {
+                    Articles = new List<NewsArticle>(),
+                    SelectedCountry = country,
+                    SelectedCategory = category,
+                    SearchQuery = searchQuery,
+                    SelectedSources = sources,
+                    SortOrder = sortOrder,
+                    ErrorMessage = MapErrorMessage(apiResult?.StatusCode)
+                };
+            }
+
             var articles = apiResult?.Data?.Articles ?? new List<NewsArticle>();
 
 
@@ -49,6 +64,16 @@ namespace NewsExplorerApp.Services
                 SearchQuery = searchQuery,
                 SelectedSources = sources,
                 SortOrder = sortOrder
+            };
+        }
+
+        private static string MapErrorMessage(HttpStatusCode? statusCode)
+        {
+            return statusCode switch
+            {
+                HttpStatusCode.Unauthorized => "Invalid API key (401 Unauthorized).",
+                _ when statusCode.HasValue && (int)statusCode.Value == 429 => "Too many requests (429). Please try again later.",
+                _ => "News service is temporarily unavailable. Please try again later."
             };
         }
 

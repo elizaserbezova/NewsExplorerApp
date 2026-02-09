@@ -1,6 +1,6 @@
 ﻿using NewsExplorerApp.ViewModels;
 
-namespace NewsExplorerApp.Services
+namespace NewsExplorerApp.Services.Interfaces
 {
     public interface INewsService
     {
