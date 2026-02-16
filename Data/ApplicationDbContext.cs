@@ -18,7 +18,7 @@ namespace NewsExplorerApp.Data
             base.OnModelCreating(builder);
 
             builder.Entity<FavoriteArticle>()
-                .HasIndex(x => new { x.UserId, x.ArticleUrl })
+                .HasIndex(x => new { x.UserId, x.Url })
                 .IsUnique();
 
             builder.Entity<FavoriteArticle>()

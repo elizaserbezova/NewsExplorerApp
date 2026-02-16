@@ -1,0 +1,40 @@
+﻿@model IReadOnlyList<NewsExplorerApp.Models.FavoriteArticle>
+
+<h2>My favorites</h2>
+
+@if (Model.Count == 0)
+{
+    <p>No favorites yet.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Source</th>
+                <th>Url</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@(item.Title ?? "(no title)")</td>
+                    <td>@(item.Source ?? "-")</td>
+                    <td><a href="@item.Url" target="_blank">Open</a></td>
+                    <td>
+                        <form asp-controller="Favorites" asp-action="Remove" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="url" value="@item.Url" />
+                            <input type="hidden" name="returnUrl" value="/Favorites/My" />
+                            <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+

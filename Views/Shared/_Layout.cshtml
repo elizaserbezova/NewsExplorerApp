@@ -29,6 +29,14 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-controller="News" asp-action="Index">News</a>
                         </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Favorites" asp-action="My">
+                                    My Favorites
+                                </a>
+                            </li>
+                        }
                     </ul>
 
                     <ul class="navbar-nav ms-auto">
@@ -72,7 +80,6 @@
                 : '<i class="bi bi-moon-fill"></i>';
         }
 
-        // Load saved theme
         const savedTheme = localStorage.getItem("theme") || "light";
         applyTheme(savedTheme);
 

@@ -29,5 +29,7 @@ namespace NewsExplorerApp.ViewModels
 
         public string? ErrorMessage { get; set; }
 
+        public HashSet<string> FavoriteUrls { get; set; } = new();
+
     }
 }

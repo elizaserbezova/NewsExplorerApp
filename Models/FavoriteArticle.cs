@@ -14,7 +14,7 @@ namespace NewsExplorerApp.Models
 
         [Required]
         [MaxLength(2000)]
-        public string ArticleUrl { get; set; } = string.Empty;
+        public string Url { get; set; } = string.Empty;
 
         [MaxLength(500)]
         public string? Title { get; set; }

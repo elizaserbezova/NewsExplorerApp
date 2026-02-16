@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using NewsExplorerApp.Models;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using NewsExplorerApp.Services;
 using NewsExplorerApp.Services.Interfaces;
 using NewsExplorerApp.ViewModels;
@@ -10,11 +10,19 @@ namespace NewsExplorerApp.Controllers
     {
         private readonly INewsService _newsService;
         private readonly INewsApiClient _newsApiClient;
+        private readonly IFavoritesService _favoritesService;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public NewsController(INewsService newsService, INewsApiClient newsApiClient)
+        public NewsController(
+            INewsService newsService,
+            INewsApiClient newsApiClient,
+            IFavoritesService favoritesService,
+            UserManager<IdentityUser> userManager)
         {
             _newsService = newsService;
             _newsApiClient = newsApiClient;
+            _favoritesService = favoritesService;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index(
@@ -24,6 +32,7 @@ namespace NewsExplorerApp.Controllers
             string sources = "",
             string sortOrder = "desc")
         {
+
             ViewBag.Countries = NewsService.GetAllowedCountries();
             ViewBag.Categories = NewsService.GetAllowedCategories();
 
@@ -38,6 +47,20 @@ namespace NewsExplorerApp.Controllers
                 searchQuery,
                 sources,
                 sortOrder);
+
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                var userId = _userManager.GetUserId(User);
+
+                if (!string.IsNullOrWhiteSpace(userId))
+                {
+                    var favorites = await _favoritesService.ListAsync(userId);
+
+                    vm.FavoriteUrls = favorites
+                        .Select(f => f.Url)
+                        .ToHashSet(StringComparer.OrdinalIgnoreCase);
+                }
+            }
 
             return View(vm);
         }

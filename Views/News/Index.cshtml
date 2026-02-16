@@ -13,14 +13,9 @@
         <select class="form-select" id="country" name="country">
             @foreach (var country in ViewBag.Countries)
             {
-                if (Model.SelectedCountry == country)
-                {
-                    <option value="@country" selected>@country.ToUpper()</option>
-                }
-                else
-                {
-                    <option value="@country">@country.ToUpper()</option>
-                }
+                <option value="@country" selected="@(Model.SelectedCountry == country)">
+                    @country.ToUpper()
+                </option>
             }
         </select>
     </div>
@@ -30,14 +25,9 @@
         <select class="form-select" id="category" name="category">
             @foreach (var category in ViewBag.Categories)
             {
-                if (Model.SelectedCategory == category)
-                {
-                    <option value="@category" selected>@category</option>
-                }
-                else
-                {
-                    <option value="@category">@category</option>
-                }
+                <option value="@category" selected="@(Model.SelectedCategory == category)">
+                    @category
+                </option>
             }
         </select>
     </div>
@@ -48,36 +38,48 @@
             <option value="">All</option>
             @foreach (var source in ViewBag.Sources)
             {
-                if (Model.SelectedSources == source)
-                {
-                    <option value="@source" selected>@source</option>
-                }
-                else
-                {
-                    <option value="@source">@source</option>
-                }
+                <option value="@source" selected="@(Model.SelectedSources == source)">
+                    @source
+                </option>
             }
         </select>
     </div>
 
     <div class="col-md-3">
         <label for="searchQuery" class="form-label">Search by keyword</label>
-        <input type="text" class="form-control" id="searchQuery" name="searchQuery" value="@Model.SearchQuery" placeholder="Enter a keyword or phrase">
-    </div>
-  
-    <div class="col-md-2 align-self-end">
-        <button type="submit" class="btn btn-secondary w-100" name="sortOrder" value="desc">Sort by Newest</button>
-    </div>
-   
-    <div class="col-md-2 align-self-end">
-        <button type="submit" class="btn btn-secondary w-100" name="sortOrder" value="asc">Sort by Oldest</button>
+        <input type="text"
+               class="form-control"
+               id="searchQuery"
+               name="searchQuery"
+               value="@Model.SearchQuery"
+               placeholder="Enter a keyword or phrase">
     </div>
 
     <div class="col-md-2 align-self-end">
-        <button type="submit" class="btn btn-primary w-100">Search</button>
+        <button type="submit"
+                class="btn btn-secondary w-100"
+                name="sortOrder"
+                value="desc">
+            Sort by Newest
+        </button>
+    </div>
+
+    <div class="col-md-2 align-self-end">
+        <button type="submit"
+                class="btn btn-secondary w-100"
+                name="sortOrder"
+                value="asc">
+            Sort by Oldest
+        </button>
+    </div>
+
+    <div class="col-md-2 align-self-end">
+        <button type="submit"
+                class="btn btn-primary w-100">
+            Search
+        </button>
     </div>
 </form>
-
 
 @if (!ViewData.ModelState.IsValid)
 {
@@ -91,19 +93,61 @@
     <div class="row row-cols-1 row-cols-md-3 g-4">
         @foreach (var article in Model.Articles)
         {
+            var isFav = Model.FavoriteUrls != null &&
+            Model.FavoriteUrls.Contains(article.Url);
+
             <div class="col">
                 <div class="card h-100">
                     @if (!string.IsNullOrEmpty(article.UrlToImage))
                     {
-                        <img src="@article.UrlToImage" class="card-img-top" alt="Article Image" style="height: 200px; object-fit: cover;">
+                        <img src="@article.UrlToImage"
+                             class="card-img-top"
+                             alt="Article Image"
+                             style="height: 200px; object-fit: cover;">
                     }
+
                     <div class="card-body">
                         <h5 class="card-title">@article.Title</h5>
                         <p class="card-text">@article.Description</p>
                     </div>
-                    <div class="card-footer">
-                        <small class="text-muted">@article.PublishedAt?.ToString("dd MMM yyyy HH:mm")</small>
-                        <a href="@article.Url" class="btn btn-primary btn-sm float-end" target="_blank">Прочети</a>
+
+                    <div class="card-footer d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            @article.PublishedAt?.ToString("dd MMM yyyy HH:mm")
+                        </small>
+
+                        <div class="d-flex gap-2">
+
+                            <a href="@article.Url"
+                               class="btn btn-primary btn-sm"
+                               target="_blank">
+                                Прочети
+                            </a>
+
+                            @if (User.Identity?.IsAuthenticated == true)
+                            {
+                                <form asp-controller="Favorites"
+                                      asp-action="@(isFav ? "Remove" : "Add")"
+                                      method="post"
+                                      class="d-inline">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden" name="url" value="@article.Url" />
+                                    <input type="hidden" name="title" value="@article.Title" />
+                                    <input type="hidden" name="source" value="@article.SourceName" />
+                                    <input type="hidden"
+                                           name="returnUrl"
+                                           value="@Context.Request.Path@Context.Request.QueryString" />
+
+                                    <button type="submit"
+                                            class="btn btn-sm @(isFav ? "btn-warning" : "btn-outline-primary")"
+                                            title="@(isFav ? "Remove from favorites" : "Add to favorites")">
+                                        @(isFav ? "★" : "☆")
+                                    </button>
+                                </form>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
@@ -115,16 +159,14 @@ else
     <p>Няма намерени новини за зададените критерии.</p>
 }
 
-
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         var sourcesSelect = document.getElementById('sources');
         var countrySelect = document.getElementById('country');
         var categorySelect = document.getElementById('category');
 
-    
         function toggleFields() {
-            if (sourcesSelect.value !== "") { 
+            if (sourcesSelect.value !== "") {
                 countrySelect.disabled = true;
                 categorySelect.disabled = true;
             } else {
@@ -134,9 +176,6 @@ else
         }
 
         toggleFields();
-
-        sourcesSelect.addEventListener('change', function () {
-            toggleFields();
-        });
+        sourcesSelect.addEventListener('change', toggleFields);
     });
 </script>
